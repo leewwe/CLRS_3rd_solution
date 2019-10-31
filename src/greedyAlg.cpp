@@ -552,7 +552,7 @@ void getPoints(vector<pair<Point, Point>>& points, const string& fileName) {
 }
 
 
-int main()
+int main_greedyAlg()
 {
 
 /*活动选择测试*/
