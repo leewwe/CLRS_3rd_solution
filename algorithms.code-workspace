@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "C:\\Users\\leewwe\\Documents\\algorithms"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"limits": "cpp",
+			"map": "cpp",
+			"set": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"ios": "cpp",
+			"xiosbase": "cpp",
+			"vector": "cpp",
+			"array": "cpp",
+			"utility": "cpp",
+			"deque": "cpp",
+			"initializer_list": "cpp",
+			"xstring": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp",
+			"iostream": "cpp",
+			"stack": "cpp"
+		}
+	}
+}
