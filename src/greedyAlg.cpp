@@ -5,14 +5,18 @@
 #include <algorithm>
 #include <iomanip>
 #include <fstream>
+#include <tuple>
+
 
 // 部分c代码的头文件和警告去除
 #include <stdio.h>
 #include <stdlib.h>
+
 #pragma warning(disable:4996)
 
 using namespace std;
 
+// 按起点视角排序
 bool startTimeSort(pair<int, int> a, pair<int, int> b) {
 	return a.first < b.first ? true : false;
 }
@@ -63,6 +67,7 @@ pair<vector<vector<int>>, vector<vector<int>>> activitySelector_dp(const vector<
 
 	return { c, act };
 }
+
 /* 动态规划算法回溯输出一种可能的最大活动方案 */
 /*
 参数：
@@ -84,7 +89,7 @@ void printActivities(const vector<vector<int>>& c, const vector<vector<int>>& ac
 	}
 }
 
-
+/************************************************************************************************************************/
 /* 活动选择，尾递归写法 */
 /*
 参数：
@@ -194,8 +199,36 @@ void greedyActivitySelector_reverse(const vector<pair<int, int>>& a, vector<pair
 		}
 	}
 }
-
-/********************************************************************************************************/
+/*读取数据*/
+/*
+参数：
+	a：时间点序列
+	fileName：读取文件的名字
+	isContainFictitious：是否要在头尾添加虚拟点，默认不添加节点
+		0->不添加虚拟节点，迭代程序
+		1->只在头添加添加虚拟节点，递归
+		2->在头尾都添加虚拟节点，DP
+返回：
+	无
+*/
+void getPoints(vector<pair<int, int>>& a, const string& fileName, const int& isContainFictitious = 0) {
+	string begin;
+	string end;
+	ifstream fin(fileName);
+	if (isContainFictitious) {
+		a.push_back({ -1,-1 });
+	}
+	while (fin >> begin >> end) {
+		int start_time = atoi(begin.c_str());
+		int end_time = atoi(end.c_str());
+		a.push_back({start_time, end_time});
+	}
+	if (isContainFictitious == 2) {
+		a.push_back({ INT_MAX, INT_MAX });
+	}
+	fin.close();
+}
+/************************************************************************************************************************/
 /* C语言版本, https://www.cnblogs.com/null00/archive/2012/05/15/2499863.html , 原版程序是方法二的代码 */
 /* 使用的结构体，这实际上是个C++结构体 */
 typedef struct point_t {
@@ -551,42 +584,131 @@ void getPoints(vector<pair<Point, Point>>& points, const string& fileName) {
 	fin.close();
 }
 
+/************************************************************************************************************************/
+/* 练习题16.1-5带权值的活动选择，目标是最大权值 */
+//没有太大改动，基本上就是在原来的基础上加了一维数据，原来的活动选择问题可以看作是权值全部都是1的特殊情况
+/*
+参数：
+	a：三维的tuple数组
+		1->代表起始时间
+		2->代表终止时间
+		3->代表权值
+*/
+pair<vector<vector<int>>, vector<vector<int>>> maxValueActivitySelector(const vector<tuple<int, int, int>>& a) {
+	int n = a.size() - 2;
+	vector<vector<int>> val(n + 2, vector<int>(n + 2, 0));
+	vector<vector<int>> act(n + 2, vector<int>(n + 2, 0));
+	for (int len = 2; len <= n + 1; ++len) {
+		for (int i = 0; i <= n - len + 1; ++i) {
+			int j = i + len;
+			int k = j - 1;
+			while (get<1>(a[i]) < get<1>(a[k])) {
+				int tmp = val[i][k] + val[k][j] + get<2>(a[k]);
+				if ((get<1>(a[i]) <= get<0>(a[k])) && get<1>(a[k]) <= get<0>(a[j]) && tmp > val[i][j])
+				{
+					val[i][j] = tmp;
+					act[i][j] = k;
+				}
+				--k;
+			}
+		}
+	}
 
-int main_greedyAlg()
-{
+	cout << "A maximum-value set of mutually \
+compatible activities has value " << val[0].back() << endl;
 
+	/*debug_info*/
+	//for (auto a : val) {
+	//	for (auto b : a) {
+	//		cout << b << ' ';
+	//	}
+	//	cout << endl;
+	//}
+	//cout << endl;
+	//for (auto a : act) {
+	//	for (auto b : a) {
+	//		cout << b << ' ';
+	//	}
+	//	cout << endl;
+	//}
+
+	return { val, act };
+}
+/*打印函数*/
+void printActivities(const vector<vector<int>>& val,
+	const vector<vector<int>>& act, const vector<tuple<int, int, int>>& a, 
+	const int i, const int j) {
+	if (val[i][j] > 0) {
+		int k = act[i][j];
+		printActivities(val, act, a, i, k);
+		printActivities(val, act, a, k, j);
+		cout << setw(2) << k << ": [" << setw(2) <<get<0>(a[k]) << "," 
+			<< setw(2) << get<1>(a[k]) << ")" 
+			<< " val:" << setw(2) << get<2>(a[k]) <<endl;
+	}
+}
+
+ /*读取数据函数*/
+/*
+参数：
+	a：三维的tuple数组
+		1->代表起始时间
+		2->代表终止时间
+		3->代表权值
+	fileNam：读取文件的名字
+返回：
+	无
+说明：
+	需要添加虚拟点
+*/
+void getPoints(vector<tuple<int, int, int>>& a, const string& fileName) {
+	string sBegin;
+	string sEnd;
+	string sVal;
+	ifstream fin(fileName);
+	a.push_back({ -1,-1,-1 });
+	while (fin >> sBegin >> sEnd >> sVal) {
+		int beginTime = atoi(sBegin.c_str());
+		int endTime = atoi(sEnd.c_str());
+		int val = atoi(sVal.c_str());
+		a.push_back({ beginTime, endTime, val});
+	}
+	a.push_back({ INT_MAX, INT_MAX, -1 });
+	fin.close();
+}
+
+
+int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
-	//vector<pair<int, int>> a_table{
-	//	{-1,-1},//虚假活动，不存在的情况，是为了方便算法初始化，动态规划和尾递归程序需要
-	//	{1,4},
-	//	{3,5},
-	//	{0,6},
-	//	{5,7},
-	//	{3,9},
-	//	{5,9},
-	//	{6,10},
-	//	{8,11},
-	//	{8,12},
-	//	{2,14},
-	//	{12,16},
-	//{INT_MAX,INT_MAX}//只有在动态规划程序中需要
-	//};
+	vector<pair<int, int>> a_table;
 	//DP写法测试
+	//getPoints(a_table, "input_0.txt", 1);
 	//auto res = activitySelector_dp(a_table);
 	//printActivities(res.first, res.second, a_table, 0, a_table.size() - 1);
-	//尾递归和迭代测试
+	
+	//尾递归
+	//getPoints(a_table, "input_0.txt", 1);
 	//vector<pair<int, int>> ret;
 	//greedyActivitySelector_rec(a_table, 0, ret);
+	
+	//迭代测试
+	//vector<pair<int, int>> ret;
+	//getPoints(a_table, "input_0.txt");
 	//greedyActivitySelector(a_table, ret);
+
+	//迭代测试，这个重载函数会返回活动下标 
 	//vector<int> ret1;
-	//这个重载函数会返回活动下标 
+	//getPoints(a_table, "input_0.txt");
 	//greedyActivitySelector(a_table, ret1);
-	//测试以最晚开始的场景
+
+	//测试以“最晚开始”的场景
+	//getPoints(a_table, "input_0.txt");
 	//sort(a_table.begin(), a_table.end(), startTimeSort);
 	//vector<pair<int, int>> ret;
 	//greedyActivitySelector_reverse(a_table, ret);
 
 /*练习题16.1-4区间图着色(interval-graph coloring)问题测试*/
+	/*C语言程序测试，对于所有的函数都做了封装*/
 	//int n = 0;
 	//// 注意，这里getPoints内部调用了malloc，应该做有效性检测
 	//point* points = getPoints("input.txt", &n);
@@ -607,11 +729,17 @@ int main_greedyAlg()
 	//process_cpp(points);
 	
 	/*优化版程序的测试*/
-	// vector<pair<Point, Point>> points;
-	// getPoints(points, "input_1.txt");
-	// vector<pair<int, int >> activity_classroom_pair;
-	// auto n = assignClassroom(points, activity_classroom_pair);
-	// printActivityAssign(points, activity_classroom_pair, n);
+	//vector<pair<Point, Point>> points;
+	//getPoints(points, "input_1.txt");
+	//vector<pair<int, int >> activity_classroom_pair;
+	//auto n = assignClassroom(points, activity_classroom_pair);
+	//printActivityAssign(points, activity_classroom_pair, n);
+
+/*练习题16.1-5测试，最大和问题，这个必须用DP来做*/
+	//vector<tuple<int, int, int>> a;
+	//getPoints(a, "input_3.txt");
+	//auto res =  maxValueActivitySelector(a);
+	//printActivities(res.first, res.second, a, 0, a.size() - 1);
 
 	return 0;
 }
