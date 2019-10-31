@@ -2924,7 +2924,7 @@ int main_DP() {
 	//vector<string> wordTable;
 	//vector<int> wordLenTable;
 
-	//if (!GetWord("input.txt", 64, wordTable, wordLenTable))
+	//if (!GetWord("article.txt", 64, wordTable, wordLenTable))
 	//return -1;
 
 	////auto res = printNeatly(wordLenTable, 64);

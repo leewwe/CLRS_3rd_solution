@@ -9,8 +9,8 @@
                 "/EHsc",
                 "/Fe:",
                 "${fileDirname}\\execu\\${fileBasenameNoExtension}.exe",
-                // "/Fo:",
-                // "${workspaceFolder}\\obj\\*.obj",
+                "/Fo:",
+                "${workspaceFolder}\\obj\\",
                 "${workspaceFolder}\\src\\*.cpp",
                 "${file}"
             ]

@@ -682,27 +682,27 @@ int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
 	vector<pair<int, int>> a_table;
 	//DP写法测试
-	//getPoints(a_table, "input_0.txt", 1);
+	//getPoints(a_table, "activityTime.txt", 2);
 	//auto res = activitySelector_dp(a_table);
 	//printActivities(res.first, res.second, a_table, 0, a_table.size() - 1);
 	
 	//尾递归
-	//getPoints(a_table, "input_0.txt", 1);
+	//getPoints(a_table, "activityTime.txt", 1);
 	//vector<pair<int, int>> ret;
 	//greedyActivitySelector_rec(a_table, 0, ret);
 	
 	//迭代测试
 	//vector<pair<int, int>> ret;
-	//getPoints(a_table, "input_0.txt");
+	//getPoints(a_table, "activityTime.txt");
 	//greedyActivitySelector(a_table, ret);
 
 	//迭代测试，这个重载函数会返回活动下标 
 	//vector<int> ret1;
-	//getPoints(a_table, "input_0.txt");
+	//getPoints(a_table, "activityTime.txt");
 	//greedyActivitySelector(a_table, ret1);
 
 	//测试以“最晚开始”的场景
-	//getPoints(a_table, "input_0.txt");
+	//getPoints(a_table, "activityTime.txt");
 	//sort(a_table.begin(), a_table.end(), startTimeSort);
 	//vector<pair<int, int>> ret;
 	//greedyActivitySelector_reverse(a_table, ret);
@@ -711,7 +711,7 @@ int main_greedyAlg(int argc, char** argv){
 	/*C语言程序测试，对于所有的函数都做了封装*/
 	//int n = 0;
 	//// 注意，这里getPoints内部调用了malloc，应该做有效性检测
-	//point* points = getPoints("input.txt", &n);
+	//point* points = getPoints("activityTime_c.txt", &n);
 	//if (!points) {
 	//	return -1;
 	//}
@@ -720,29 +720,28 @@ int main_greedyAlg(int argc, char** argv){
 
 	/*C/C++混编程序测试*/
 	//vector<point> points;
-	//getPoints(points, "input_1.txt");
+	//getPoints(points, "activityTime.txt");
 	//process_c_cpp(points);
 
 	/*第一版程序的测试*/
 	//vector<Point> points;
-	//getPoints(points, "input_1.txt");
+	//getPoints(points, "activityTime.txt");
 	//process_cpp(points);
 	
 	/*优化版程序的测试*/
 	//vector<pair<Point, Point>> points;
-	//getPoints(points, "input_1.txt");
+	//getPoints(points, "activityTime.txt");
 	//vector<pair<int, int >> activity_classroom_pair;
 	//auto n = assignClassroom(points, activity_classroom_pair);
 	//printActivityAssign(points, activity_classroom_pair, n);
 
 /*练习题16.1-5测试，最大和问题，这个必须用DP来做*/
 	//vector<tuple<int, int, int>> a;
-	//getPoints(a, "input_3.txt");
+	//getPoints(a, "activityTime_weight.txt");
 	//auto res =  maxValueActivitySelector(a);
 	//printActivities(res.first, res.second, a, 0, a.size() - 1);
 
 	return 0;
 }
-
 
 
