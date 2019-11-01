@@ -765,6 +765,64 @@ void printStealSeq(const vector<int>& weight, const vector<int>& b, const int& W
 	}
 }
 
+/************************************************************************************************************************/
+/*练习题16.2-4穿越北达科塔州的最小补水次数*/
+/*
+参数：
+	dist：距离序列
+	M：教授一次补水可走的平均最大距离
+返回：
+	补水点的下标（从1开始）
+*/
+vector<int> minNumOfRefill(const vector<double>& dist, const double& M) {
+	vector<int> refillPos;
+	double resDist = M;
+
+	int i = 0;
+	while (i < dist.size()) {
+		if (dist[i] > resDist) {
+			refillPos.push_back(i);
+			resDist = M;
+			continue;
+		}
+		resDist -= dist[i];
+		++i;
+	}
+	return refillPos;
+}
+
+/************************************************************************************************************************/
+/*练习题16.2-5寻找最小的单位区间数目*/
+/*
+参数：
+	points：点集序列
+返回：
+	map
+		key：区间起点的值
+		value：区间终点的值
+*/
+map<double, double> minNumOfInterval(const vector<double>& points) {
+	if (points.empty()) {
+		return map<double, double>();
+	}
+	auto sortedPoints{ points };
+	sort(sortedPoints.begin(), sortedPoints.end());
+	
+	map<double, double> ret;
+	double startBorder = sortedPoints[0];
+	double endBorder= startBorder + 1;
+	int i = 0;
+	for (; i < sortedPoints.size(); ++i) {
+		if (sortedPoints[i] > endBorder) {
+			ret.emplace(startBorder, sortedPoints[i - 1]);
+			startBorder = sortedPoints[i];
+			endBorder = startBorder + 1;
+		}
+	}
+	ret.emplace(startBorder, sortedPoints[i - 1]);
+	return ret;
+}
+
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
 	vector<pair<int, int>> a_table;
@@ -834,7 +892,15 @@ int main_greedyAlg(int argc, char** argv){
 	// DP_0_1_Knapsack(v, w, 50);
 	// auto res = DP_0_1_Knapsack_spaceOptimal_1(v, w, 50);
 	// printStealSeq(w, res.second, 50);
-	// return 0;
+	
+/*练习题16.2-4测试*/
+	// vector<double> dist{ 3, 4, 2, 8, 2, 7, 2, 8, 4, 9 };
+	// auto res = minNumOfRefill(dist, 10);
+
+/*练习题16.2-5测试*/
+	vector<double> points{ 1.9, 2.6, 3.4, 4.4, 8.3, 9.1, 1.4, 6.7, 9.4 };
+	auto res = minNumOfInterval(points);
+	return 0;
 }
 
 
