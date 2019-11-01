@@ -676,7 +676,94 @@ void getPoints(vector<tuple<int, int, int>>& a, const string& fileName) {
 	a.push_back({ INT_MAX, INT_MAX, -1 });
 	fin.close();
 }
+/************************************************************************************************************************/
+/*练习题16.2-2 0-1背包*/
+/*
+参数：
+	val：价值序列
+	weight：重量序列
+	W：背包负重
+返回：
+	first：总价值矩阵，最终的c[n][W]代表最大的赃物价值
+	second：辅助构造输出偷盗物编号的序列
+*/
+pair<vector<vector<int>>,vector<int>> DP_0_1_Knapsack(const vector<int>& val, const vector<int>& weight, const int W) {
+	int n = val.size();
+	vector<vector<int>> c(n + 1, vector<int>(W + 1, 0));
+	vector<int> b(W + 1, -1);
+	for (int i = 1; i <= n; ++i) {
+		for (int w = 1; w <= W; ++w) {
+			int tmp_w = weight[i - 1];
+			if (tmp_w <= w) {
+				if (val[i - 1] + c[i - 1][w - tmp_w] > c[i - 1][w]) {
+					c[i][w] = val[i - 1] + c[i - 1][w - tmp_w];
+					b[w] = i - 1;
+				}
+				else {
+					c[i][w] = c[i - 1][w];
+				}
+			}
+			else {
+				c[i][w] = c[i - 1][w];
+			}
+		}
+	}
 
+	return { c,b };
+}
+/*
+参数：
+	val：价值序列
+	weight：重量序列
+	W：背包负重
+返回：
+	first：最大的赃物价值
+	second：辅助构造输出偷盗物编号的序列
+*/
+pair<int, vector<int>> DP_0_1_Knapsack_spaceOptimal_1(const vector<int>& val, const vector<int>& weight, const int W) {
+	int n = val.size();
+
+	vector<int> curr_c(W + 1, 0);
+	vector<int> pre_c(W + 1, 0);
+	auto pCurr = &curr_c;
+	auto pPre = &pre_c;
+	vector<int> b(W + 1, -1);
+	for (int i = 1; i <= n; ++i) {
+		for (int w = 1; w <= W; ++w) {
+			int tmp_w = weight[i - 1];
+			if (tmp_w <= w) {
+				if (val[i - 1] + (*pPre)[w - tmp_w] > (*pPre)[w]) {
+					(*pCurr)[w] = val[i - 1] + (*pPre)[w - tmp_w];
+					b[w] = i - 1;
+				}
+				else {
+					(*pCurr)[w] = (*pCurr)[w];
+				}
+			}
+			else {
+				(*pCurr)[w] = (*pPre)[w];
+			}
+		}
+		swap(pCurr, pPre);
+	}
+
+	return { pPre->back(), b};
+}
+/*
+参数：
+	weight：重量序列
+	b；计算函数计算出的辅助输出序列
+	W：背包最大承重
+*/
+void printStealSeq(const vector<int>& weight, const vector<int>& b, const int& W) {
+	if (W < 0 || W > b.size() - 1 ||b[W] < 0) {
+		return;
+	}
+	else {
+		printStealSeq(weight, b, W - weight[b[W]]);
+		cout << "The thief should steal the No." << b[W] << " goods" << endl;
+	}
+}
 
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
@@ -741,7 +828,13 @@ int main_greedyAlg(int argc, char** argv){
 	//auto res =  maxValueActivitySelector(a);
 	//printActivities(res.first, res.second, a, 0, a.size() - 1);
 
-	return 0;
+/*练习题16.2-2测试*/
+	// vector<int> v{ 60,100,120 };
+	// vector<int> w{ 10,20,30 };
+	// DP_0_1_Knapsack(v, w, 50);
+	// auto res = DP_0_1_Knapsack_spaceOptimal_1(v, w, 50);
+	// printStealSeq(w, res.second, 50);
+	// return 0;
 }
 
 
