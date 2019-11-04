@@ -822,6 +822,141 @@ map<double, double> minNumOfInterval(const vector<double>& points) {
 	ret.emplace(startBorder, sortedPoints[i - 1]);
 	return ret;
 }
+/************************************************************************************************************************/
+/*霍夫曼编码，贪心*/
+// 霍夫曼编码的二叉树节点结构
+/*
+left：左孩子指针
+right：有孩子指针
+parent：父亲指针
+val：first：对应的ASCII字符
+	second：对应的频次
+*/
+struct huffmanNode {
+	huffmanNode* left;
+	huffmanNode* right;
+	huffmanNode* parent;
+	pair<char, int> val;
+	huffmanNode() : left(NULL), right(NULL), parent(NULL), val({ -1,-1 }) {}
+	huffmanNode(pair<char, int> v)
+		: left(NULL), right(NULL), parent(NULL), val(v) {}
+};
+
+// 排序谓词
+struct compareFre {
+	constexpr bool operator()(const huffmanNode& lhs, const huffmanNode& rhs) {
+		return lhs.val.second > rhs.val.second;
+	}
+};
+
+/*
+参数：
+	C：字符频次表
+返回：
+	用来编码的树根指针
+*/
+huffmanNode* huffmanEncode(const map<char, int>& C) {
+	if (C.empty()) {
+		return NULL;
+	}
+	// 使用优先队列，按照频次进行排序
+	priority_queue<huffmanNode, vector<huffmanNode>, compareFre> Q(C.begin(), C.end());
+	int n = C.size();
+
+	for (int i = 0; i < n - 1; ++i) {
+		auto x = new huffmanNode(Q.top());
+		Q.pop();
+		auto y = new huffmanNode(Q.top());
+		Q.pop();
+
+		auto node = new huffmanNode;
+		x->parent = node;
+		y->parent = node;
+		node->left = x;
+		node->right = y;
+		node->val.first = -1;
+		node->val.second = x->val.second + y->val.second;
+
+		Q.emplace(*node);
+	}
+	auto root = new huffmanNode(Q.top());
+	return root;
+}
+
+/*输出函数的辅助函数*/
+/*
+参数：
+	root：用来构造编码表的根指针
+	res：用于返回的编码表
+	str：中间传递的用的string
+返回：
+	无
+*/
+void outHuffmanEncode_aux(const huffmanNode* root, map<char, string>& res, string& str) {
+	if (!root) {
+		return;
+	}
+	// 判断根节点
+	if (root->parent == NULL) {
+	}
+	// 判断非叶子节点
+	else if (root->val.first == -1) {
+		if (root->parent->left == root) {
+			str += "0";
+		}
+		else {
+			str += "1";
+		}
+	}
+	// 叶子节点
+	else {
+		if (root->parent->left == root) {
+			str += "0";
+			res[root->val.first] += str;
+		}
+		else {
+			str += "1";
+			res[root->val.first] += str;
+		}
+		str.erase(str.end() - 1);
+	}
+	// 递归调用
+	outHuffmanEncode_aux(root->left, res, str);
+	outHuffmanEncode_aux(root->right, res, str);
+	// 非叶子节点回溯时删除刚刚添加的节点
+	if (root->left && root->right && root->parent) {
+		str.erase(str.end() - 1);
+	}
+}
+/*输出函数*/
+/*
+参数：
+	root：用来构造编码表的根指针
+	res：用于返回的编码表
+返回：
+	无
+*/
+void outHuffmanEncode(const huffmanNode* root, map<char, string>& res) {
+	string str;
+	outHuffmanEncode_aux(root, res, str);
+}
+/*统计文章的字符频次*/
+/*
+参数：
+	filename：读取文件的名字
+返回：
+	字符频次表
+*/
+map<char, int> getChOcurrFreq(string fileName) {
+	map<char, int> chFreqMap;
+	char c = -1;
+	ifstream fin(fileName);
+	while (fin >> c) {
+		chFreqMap[c]++;
+	}
+
+	return chFreqMap;
+}
 
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
@@ -898,8 +1033,23 @@ int main_greedyAlg(int argc, char** argv){
 	// auto res = minNumOfRefill(dist, 10);
 
 /*练习题16.2-5测试*/
-	vector<double> points{ 1.9, 2.6, 3.4, 4.4, 8.3, 9.1, 1.4, 6.7, 9.4 };
-	auto res = minNumOfInterval(points);
+	// vector<double> points{ 1.9, 2.6, 3.4, 4.4, 8.3, 9.1, 1.4, 6.7, 9.4 };
+	// auto res = minNumOfInterval(points);
+/*霍夫曼编码测试*/
+	// // 读取数据，并构造相应的字符频次表
+	// auto C = getChOcurrFreq("alpha.txt");
+
+	// // 编码，返回一棵树的根指针
+	// auto res = huffmanEncode(C);
+	
+	// // 编码表
+	// map<char, string>ret;
+	// outHuffmanEncode(res, ret);
+
+	// for (auto a : ret) {
+	// 	cout << a.first << "|" << a.second << endl;
+	// }
+// 
 	return 0;
 }
 
