@@ -957,6 +957,91 @@ map<char, int> getChOcurrFreq(string fileName) {
 
 	return chFreqMap;
 }
+/************************************************************************************************************************/
+/*拟阵求解任务调度问题*/
+/*求解单位时间任务调度问题的数据结构*/
+struct taskItem {
+	taskItem(int id, int d, int w) : ID(id), ddl(d), weight(w) {}
+	int ID;
+	int ddl;
+	int weight;
+}; 
+/*按weight排序的谓词*/
+bool compareTaksWeight(const taskItem& a, const taskItem& b) {
+	return a.weight > b.weight;
+}
+/*按deadline排序的谓词*/
+bool compareTaskDDL(const taskItem& a, const taskItem& b) {
+	return a.ddl < b.ddl;
+}
+/*判定是否满足拟阵条件（是否是独立的提前任务）的函数*/
+/*
+参数：
+	earlyTaskTab：当前的提前任务列表
+	wait2InsertTask：待检测的任务
+返回：
+	true：可以加入到提前列表
+	false：不可以加入提前列表
+说明：
+	可以改进的
+*/
+bool isAddEarlyTask(vector<taskItem> earlyTaskTab, const taskItem& wait2InsertTask) {
+	earlyTaskTab.push_back(wait2InsertTask);
+	sort(earlyTaskTab.begin(), earlyTaskTab.end(), compareTaskDDL);
+	for (int i = 0; i < earlyTaskTab.size(); ++i) {
+		if (earlyTaskTab[i].ddl < i + 1) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/*调度函数*/
+/*
+参数：
+	taskTab：任务列表（函数会对其进行修改）
+返回：
+	first：提前的任务
+	second：延后的任务
+*/
+pair<vector<int>, vector<int>> matroid4UnitTaskSchedule(vector<taskItem>& taskTab) {
+	sort(taskTab.begin(), taskTab.end(), compareTaksWeight);
+	
+	vector<int> lateIDseq;
+	vector<taskItem> earlyTaskTab{ taskTab[0], taskTab[1] };
+	for (int i = 2; i < taskTab.size(); ++i) {
+		if (isAddEarlyTask(earlyTaskTab, taskTab[i])) {
+			earlyTaskTab.push_back(taskTab[i]);
+		}
+		else {
+			lateIDseq.push_back(taskTab[i].ID);
+		}
+	}
+
+	sort(earlyTaskTab.begin(), earlyTaskTab.end(), compareTaskDDL);
+	vector<int> earlyIDseq;
+	for (auto a : earlyTaskTab) {
+		earlyIDseq.push_back(a.ID);
+	}
+	return { earlyIDseq,lateIDseq };
+}
+/*读取任务列表*/
+/*
+参数：
+	taskTab：用于返回的任务列表
+	fileName：要读取的文件
+返回：
+	无
+*/
+void getTaskTab(vector<taskItem>& taskTab, string fileName) {
+	ifstream fin(fileName);
+	int id = -1;
+	int ddl = -1;
+	int weight = -1;
+	while (fin >> id >> ddl >> weight) {
+		taskTab.push_back(taskItem(id, ddl, weight));
+	}
+}
 
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
@@ -1049,6 +1134,17 @@ int main_greedyAlg(int argc, char** argv){
 	// for (auto a : ret) {
 	// 	cout << a.first << "|" << a.second << endl;
 	// }
+/*用拟阵求解任务调度问题*/	
+	// vector<taskItem> taskTab;
+	// // 读取任务表，代编号的
+	// getTaskTab(taskTab, "taskTab.txt");
+
+	// // 测试练习题16.5-1
+	// for (auto& a : taskTab) {
+	// 	a.weight = 80 - a.weight;
+	// }
+
+	// auto res = matroid4UnitTaskSchedule(taskTab);
 // 
 	return 0;
 }
