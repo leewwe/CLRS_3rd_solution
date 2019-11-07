@@ -1042,6 +1042,50 @@ void getTaskTab(vector<taskItem>& taskTab, string fileName) {
 		taskTab.push_back(taskItem(id, ddl, weight));
 	}
 }
+
+/************************************************************************************************************************/
+/*思考题16-4中对于检查独立性的改进，原来每次需要O(n)，改进之后需要o(n)*/
+/*调度函数，优化独立想检查*/
+/*
+参数：
+	taskTab：任务列表（函数会对其进行修改）
+返回：
+	first：提前的任务列表
+	second：延后任务的开始位置（也就是提前任务之后）
+*/
+pair<vector<taskItem>, int> matroid4UnitTaskSchedule_optimal(vector<taskItem>& taskTab) {
+	sort(taskTab.begin(), taskTab.end(), compareTaksWeight);
+
+	vector<taskItem> taskSeq(taskTab.size());
+	// 记录最后存入延后任务的位置（也就是提前任务之后）
+	int lateStartPos = taskTab.size();
+	for (int i = 0; i < taskTab.size(); ++i) {
+		// 检查是否在该任务的ddl之前有空槽（检查拟阵是否可以扩展）
+		int k = taskTab[i].ddl - 1;
+		while(k >= 0) {
+			if (taskSeq[k].ID < 0) {
+				taskSeq[k] = taskTab[i];
+				break;
+			}
+			--k;
+		}
+		// 如果检查完所有的ddl之前的任务没有空槽（证明拟阵无法完成扩展）
+		if (k < 0) {
+			for (int j = taskSeq.size() - 1; j >= taskTab[i].ddl; --j) {
+				if (taskSeq[j].ID < 0) {
+					taskSeq[j] = taskTab[i];
+					--lateStartPos;
+					break;
+				}
+			}
+		}
+	}
+	// 按照ID号对所有的提前任务进行排序
+	sort(taskSeq.begin(), taskSeq.begin() + lateStartPos, compareTaskDDL);
+
+	return { taskSeq, lateStartPos };
+}
+
 /************************************************************************************************************************/
 /*思考题16-1贪心解法*/
 /*
@@ -1237,16 +1281,18 @@ int main_greedyAlg(int argc, char** argv){
 	// 	cout << a.first << "|" << a.second << endl;
 	// }
 /*用拟阵求解任务调度问题*/	
-	// vector<taskItem> taskTab;
-	// // 读取任务表，代编号的
-	// getTaskTab(taskTab, "taskTab.txt");
+	//vector<taskItem> taskTab;
+	//// 读取任务表，代编号的
+	//getTaskTab(taskTab, "taskTab.txt");
 
-	// // 测试练习题16.5-1
-	// for (auto& a : taskTab) {
-	// 	a.weight = 80 - a.weight;
-	// }
+	////// 测试练习题16.5-1
+	////for (auto& a : taskTab) {
+	////	a.weight = 80 - a.weight;
+	////}
+	////auto res = matroid4UnitTaskSchedule(taskTab);
 
-	// auto res = matroid4UnitTaskSchedule(taskTab);
+	//// 思考题16-4，对于独立性检查的改进测试
+	//auto res = matroid4UnitTaskSchedule_optimal(taskTab);
 
 /*思考题16-1硬币找零测试*/
 	// vector<int> coins{ 1,25,10, 5 };
