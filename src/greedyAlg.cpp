@@ -1042,6 +1042,108 @@ void getTaskTab(vector<taskItem>& taskTab, string fileName) {
 		taskTab.push_back(taskItem(id, ddl, weight));
 	}
 }
+/************************************************************************************************************************/
+/*思考题16-1贪心解法*/
+/*
+参数：
+	coins：按面值从小到大排序好的面值序列
+	n：需要兑换的钱数
+返回：
+	每种面值的需要的个数
+*/
+vector<int> coinsChange_greedy(const vector<int>& coins, int n) {
+	vector<int> ret(coins.size());
+	for (int i = coins.size() - 1; i >= 0 ; --i) {
+		ret[i] = n / coins[i];
+		n %= coins[i];
+	}
+	return ret;
+}
+/*思考题16-1DP解法*/
+/*
+参数：
+	coins：按面值从小到大排序好的面值序列
+	n：需要兑换的钱数
+返回：
+	first：j美分需要的硬币个数
+	second：j美分最后需要的硬币面值
+*/
+pair<vector<int>, vector<int>> coinsChange_DP(const vector<int>& coins, int n) {
+	vector<int> c(n + 1, 0);
+	vector<int> denom(n + 1, 0);
+	for (int j = 1; j <= n; ++j) {
+		c[j] = INT_MAX;
+		for (int i = 0; i < coins.size(); ++i) {
+			// 这里写的很妙，首先验证了j - coins[i] >= 0，利用了&&的短接特性，
+			if (j >= coins[i] && 1 + c[j - coins[i]] < c[j]) {
+				c[j] = 1 + c[j - coins[i]];
+				denom[j] = coins[i];
+			}
+		}
+	}
+	return { c, denom };
+}
+/*思考题16-1贪心算法的打印函数*/
+/*
+参数：
+	nums：每种面值需要的个数
+	coins：按面值从小到大排序好的面值序列
+返回：
+	无
+*/
+void print_greedy(const vector<int>& nums, const vector<int>& coins){
+	int sumCoins = 0;
+	cout << "找零方案为：" << endl;
+	for (int i = 0; i < coins.size();++i) {
+		if (nums[i]) {
+			cout << coins[i] << "硬币需要" << nums[i] << "个" << endl;
+			sumCoins += nums[i];
+		}
+	}
+	cout << "总共需要" << sumCoins << "枚硬币" << endl;
+}
+/*思考题16-1DP算法给出找零方案的函数*/
+/*
+参数：
+	j：需要兑换的钱数
+	nums：每种面值需要的个数
+	changeMethod：用于返回的找零方案
+返回：
+	无
+*/
+void giveChange_DP(int j, const pair<vector<int>,vector<int>>& c_denom, map<int,int>& changeMethod) {
+	if (j > 0) {
+		++changeMethod[c_denom.second[j]];
+		giveChange_DP(j - c_denom.second[j], c_denom, changeMethod);
+	}
+}
+/*思考题16-1DP算法找零方案的打印函数函数*/
+/*
+参数：
+	j：需要兑换的钱数
+	nums：每种面值需要的个数
+	coins：按面值从小到大排序好的面值序列
+返回：
+	无
+*/
+void printChange_DP(int j, const pair<vector<int>, vector<int>>& c_denom, const vector<int>& coins) {
+	// 计算出相应的找零方案
+	map<int, int> changeMethod;
+	for (auto a : coins) {
+		changeMethod.emplace(a, 0);
+	}
+	giveChange_DP(j, c_denom, changeMethod);
+	// 存储临时总的硬币个数
+	int sumCoins = 0;
+	cout << "找零方案为：" << endl;
+	for (auto a : changeMethod) {
+		if (a.second) {
+			cout << "面值为" << a.first << "需要" << a.second << "枚" <<endl;
+			sumCoins += a.second;
+		}
+	}
+	cout << "总共需要" << sumCoins << "枚硬币" << endl;
+}
 
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
@@ -1145,6 +1247,16 @@ int main_greedyAlg(int argc, char** argv){
 	// }
 
 	// auto res = matroid4UnitTaskSchedule(taskTab);
+
+/*思考题16-1硬币找零测试*/
+	// vector<int> coins{ 1,25,10, 5 };
+	// // 贪心算法测试
+	// sort(coins.begin(), coins.end());
+	// auto res = coinsChange_greedy(coins, 30);
+	// print_greedy(res, coins);
+	// // DP算法测试
+	// auto res1 = coinsChange_DP(coins, 30);
+	// printChange_DP(30, res1, coins);
 // 
 	return 0;
 }
