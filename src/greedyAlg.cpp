@@ -1189,6 +1189,101 @@ void printChange_DP(int j, const pair<vector<int>, vector<int>>& c_denom, const 
 	cout << "总共需要" << sumCoins << "枚硬币" << endl;
 }
 
+/************************************************************************************************************************/
+/*离线cache*/
+/*初始化cache函数*/
+/*
+参数：
+	R：访问序列
+	k：缓冲区的大小
+	H：带初始化的hash表
+返回：
+	无
+*/
+void initialCache(const vector<int>& R, const int& k, unordered_map<int, vector<int>>& H) {
+	int ind = 0;
+	for (int i = 0; i < R.size(); ++i) {
+		H[R[i]].push_back(i);
+	}
+}
+/*用于优先队列的函数对象*/ 
+class compareAccessTime {
+public:
+	bool operator()(const pair<int, int> a, const pair<int, int> b) {
+		return a.second < b.second;
+	}
+};
+/*访问函数*/
+/*
+参数：
+	r_i：挡墙访问的元素的值（地址）
+	k：cache的最大大小
+	T：底层用红黑树实现的标准库，存储的是cache中的值
+	P：优先队列P，存储的是cache中按照访问时间从后到前的“元素-时间”对
+	H：底层是hash表的标准库，存储的是元素和其对应的下标（访问时间）（这里直接使用的开放链表法）
+返回：
+	无
+说明：
+	这个函数负责完成cache的添加元素、驱逐元素，实现原理是将来最远（furthest-in-future）
+*/
+void access(const int& r_i, const int& k, 
+	set<int>& T, priority_queue<pair<int, int>, vector<pair<int,int>>, compareAccessTime>& P, unordered_map<int, vector<int>>& H) {
+	// Compute the next access time for r_i.
+	auto& S_ind = H[r_i];
+	auto ind = S_ind.front();
+	int time = INT_MAX;
+	S_ind.erase(S_ind.begin());
+	if (!S_ind.empty()) {
+		time = S_ind.front();
+	}
+	// Check to see whether r_i is currently in the cache.
+	if (T.find(r_i) != T.end()) {
+		cout << r_i <<" cache hit" << endl;
+	}
+	else if (T.size() < k) {
+		// Insert in an empty slot in the cache.
+		T.insert(r_i);
+		auto e = make_pair(r_i, time);
+		P.push(e);
+		cout << r_i << " cache miss, inserts " << r_i << " in empty slot" << endl;
+	}
+	else {
+		auto e = P.top();
+		if (e.second <= time) { // r_i has the furthest access time
+			cout << r_i <<" cache miss, no data element evicted" << endl;
+		}
+		else {
+			// evict the element with furthest access time
+			cout << r_i <<" cache miss, evict data element " << e.first << endl;
+			e = P.top();
+			P.pop();
+			T.erase(e.first);
+			e = make_pair(r_i, time);
+			P.push(e);
+			T.insert(r_i);
+		}
+	}
+}
+/*最终的缓存管理函数（封装函数）*/
+/*
+参数：
+	R：访问序列
+	k：最大的cache大小
+返回：
+	无
+说明：
+	需要初始化在initialCache和access中使用到的三种数据结构
+*/
+void cacheManage(const vector<int>& R, int k) {
+	set<int> T;
+	priority_queue<pair<int, int>, vector<pair<int, int>>, compareAccessTime> P;
+	unordered_map<int, vector<int>> H;
+	initialCache(R, k, H);
+	for (int i = 0; i < R.size(); ++i) {
+		access(R[i], k, T, P, H);
+	}
+}
+
 int main_greedyAlg(int argc, char** argv){
 /*活动选择测试*/
 	vector<pair<int, int>> a_table;
@@ -1303,6 +1398,9 @@ int main_greedyAlg(int argc, char** argv){
 	// // DP算法测试
 	// auto res1 = coinsChange_DP(coins, 30);
 	// printChange_DP(30, res1, coins);
+/*思考题16-5离线缓存测试*/
+	//vector<int> R{ 4,2,4,2,4,1,3,4,2,1,3,2 };
+	//cacheManage(R, 3);
 // 
 	return 0;
 }
