@@ -56,7 +56,7 @@ void RB_Tree::RB_search(pair<TreeNode*, bool>& ret, const int& val, TreeNode* no
 	}
 }
 
-pair<TreeNode*, bool> RB_Tree::RB_search(const int& val) {	
+pair<RB_Tree::TreeNode*, bool> RB_Tree::RB_search(const int& val) {
 	pair<TreeNode*, bool> ret({ NIL, false });
 	RB_search(ret, val, root);
 	return ret;
@@ -254,14 +254,14 @@ void RB_Tree::RB_deleteFixUp(TreeNode* x) {
 	x->color = BLACK;
 }
 
-TreeNode* RB_Tree::RB_min(TreeNode* node) {
+RB_Tree::TreeNode* RB_Tree::RB_min(TreeNode* node) {
 	while (node->left != NIL) {
 		node = node->left;
 	}
 	return node;
 }
 
-TreeNode* RB_Tree::RB_max(TreeNode* node) {
+RB_Tree::TreeNode* RB_Tree::RB_max(TreeNode* node) {
 	while (node != NIL) {
 		node = node->right;
 	}
