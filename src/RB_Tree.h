@@ -2,6 +2,7 @@
 #include <utility>
 using namespace std;
 
+template<typename T>
 class RB_Tree {
 private:
 	const enum { RED, BLACK };
@@ -10,7 +11,7 @@ private:
 		TreeNode* right;
 		TreeNode* parent;
 		int color;
-		int val;
+		T val;
 	};
 	TreeNode* root;
 	TreeNode nil;
@@ -27,15 +28,15 @@ public:
 	}
 	~RB_Tree() = default;
 
-	pair<TreeNode*, bool> RB_search(const int& val);
-	void RB_insert(int val);
-	bool RB_delete(const int& val);
+	pair<TreeNode*, bool> RB_search(const T& val);
+	void RB_insert(T val);
+	bool RB_delete(const T& val);
 
 	TreeNode* RB_min(TreeNode* node);
 	TreeNode* RB_max(TreeNode* node);
 private:
 	// ??????
-	void RB_search(pair<TreeNode*, bool>& ret, const int& val, TreeNode* node);
+	void RB_search(pair<TreeNode*, bool>& ret, const T& val, TreeNode* node);
 	// ???????
 	void leftRotate(TreeNode* node);
 	void rightRotate(TreeNode* node);

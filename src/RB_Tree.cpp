@@ -1,6 +1,7 @@
 #include "RB_Tree.h"
 
-void RB_Tree::leftRotate(TreeNode* x) {
+template<typename T>
+void RB_Tree<T>::leftRotate(TreeNode* x) {
 	auto y = x->right;
 	x->right = y->left;
 	if (y->left != NIL) {
@@ -19,7 +20,8 @@ void RB_Tree::leftRotate(TreeNode* x) {
 	y->left = x;
 	x->parent = y;
 }
-void RB_Tree::rightRotate(TreeNode* y) {
+template<typename T>
+void RB_Tree<T>::rightRotate(TreeNode* y) {
 	auto x = y->left;
 	y->left = x->right;
 	if (x->right != NIL) {
@@ -40,7 +42,8 @@ void RB_Tree::rightRotate(TreeNode* y) {
 }
 
 
-void RB_Tree::RB_search(pair<TreeNode*, bool>& ret, const int& val, TreeNode* node) {
+template<typename T>
+void RB_Tree<T>::RB_search(pair<TreeNode*, bool>& ret, const T& val, TreeNode* node) {
 	if (node == NIL) {
 		return;
 	}
@@ -56,13 +59,15 @@ void RB_Tree::RB_search(pair<TreeNode*, bool>& ret, const int& val, TreeNode* no
 	}
 }
 
-pair<RB_Tree::TreeNode*, bool> RB_Tree::RB_search(const int& val) {
+template<typename T>
+pair<typename RB_Tree<T>::TreeNode*, bool> RB_Tree<T>::RB_search(const T& val) {
 	pair<TreeNode*, bool> ret({ NIL, false });
 	RB_search(ret, val, root);
 	return ret;
 }
 
-void RB_Tree::RB_insert(int val) {
+template<typename T>
+void RB_Tree<T>::RB_insert(T val) {
 	TreeNode* y = NIL;
 	auto x = root;
 	while (x != NIL) {
@@ -92,7 +97,8 @@ void RB_Tree::RB_insert(int val) {
 	RB_insertFixUp(z);
 }
 
-void RB_Tree::RB_insertFixUp(TreeNode* z) {
+template<typename T>
+void RB_Tree<T>::RB_insertFixUp(TreeNode* z) {
 	while (z->parent->color == RED) {
 		if (z->parent->parent == NIL) {
 			break;
@@ -137,7 +143,8 @@ void RB_Tree::RB_insertFixUp(TreeNode* z) {
 	root->color = BLACK;
 }
 
-void RB_Tree::RB_transplant(TreeNode* u, TreeNode* v) {
+template<typename T>
+void RB_Tree<T>::RB_transplant(TreeNode* u, TreeNode* v) {
 	if (u->parent == NIL) {
 		root = v;
 	}
@@ -150,7 +157,8 @@ void RB_Tree::RB_transplant(TreeNode* u, TreeNode* v) {
 	v->parent = u->parent;	// 这里在u不是root，v是NIL的时候，会修改NIL->parent，需要在对应的位置进行修正
 }
 
-bool RB_Tree::RB_delete(const int& val) {
+template<typename T>
+bool RB_Tree<T>::RB_delete(const T& val) {
 	auto res = RB_search(val);
 	if (!res.second) {
 		return false;
@@ -161,7 +169,8 @@ bool RB_Tree::RB_delete(const int& val) {
 	}
 }
 
-void RB_Tree::RB_delete(TreeNode* z) {
+template<typename T>
+void RB_Tree<T>::RB_delete(TreeNode* z) {
 	auto y = z;
 	auto yOriginalColor = y->color;
 	TreeNode* x;
@@ -197,7 +206,8 @@ void RB_Tree::RB_delete(TreeNode* z) {
 	delete z;
 }
 
-void RB_Tree::RB_deleteFixUp(TreeNode* x) {
+template<typename T>
+void RB_Tree<T>::RB_deleteFixUp(TreeNode* x) {
 	while (x != root && x->color == BLACK) {
 		if (x == x->parent->left) {
 			auto w = x->parent->right;
@@ -254,14 +264,16 @@ void RB_Tree::RB_deleteFixUp(TreeNode* x) {
 	x->color = BLACK;
 }
 
-RB_Tree::TreeNode* RB_Tree::RB_min(TreeNode* node) {
+template<typename T>
+typename RB_Tree<T>::TreeNode* RB_Tree<T>::RB_min(TreeNode* node) {
 	while (node->left != NIL) {
 		node = node->left;
 	}
 	return node;
 }
 
-RB_Tree::TreeNode* RB_Tree::RB_max(TreeNode* node) {
+template<typename T>
+typename RB_Tree<T>::TreeNode* RB_Tree<T>::RB_max(TreeNode* node) {
 	while (node != NIL) {
 		node = node->right;
 	}
