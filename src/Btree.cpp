@@ -1,5 +1,43 @@
 ﻿#include "Btree.h"
 
+/*友元函数版连接函数*/
+/*
+参数：
+	t1：关键字均小于k的树
+	t2：关键字均大于k的树
+	k：连接的关键字
+返回：
+	连接后的树
+说明：
+	使用前要保证确认满足t1.key < k < t2.key
+*/
+template<typename T = char>
+Btree<T> join(Btree<T> t1, Btree<T> t2, T k) {
+	if (t1.root->h > t2.root->h) {
+		auto insertNode = t1.findRightNode_h(t1.root, t2.root->h + 1);
+		insertNode->key.insert(insertNode->key.end(), k);
+		insertNode->c.insert(insertNode->c.end(), t2.root);
+		++(insertNode->n);
+		return t1;
+	}
+	else if (t1.root->h < t2.root->h) {
+		auto insertNode = t2.findLeftNode_h(t2.root, t1.root->h + 1);
+		insertNode->key.insert(insertNode->key.begin(), k);
+		insertNode->c.insert(insertNode->c.begin(), t1.root);
+		++(insertNode->n);
+		return t2;
+	}
+	else {
+		auto lr = t1.root;
+		auto rr = t2.root;
+		Btree<T> ret;
+		ret.root->key.push_back(k);
+		ret.root->c.push_back(lr);
+		ret.root->c.push_back(rr);
+		return ret;
+	}
+}
+
 /*插入函数*/
 /*
 参数：
@@ -18,6 +56,7 @@ void Btree<T>::insert(T k) {
 		root = s;
 		s->leaf = false;
 		s->c.push_back(r);
+		s->h = r->h + 1;
 		splitChild(s, 0);
 		insertNonFull(s, k);
 	}
@@ -130,6 +169,90 @@ void Btree<T>::print(Node* x) {
 				cout << x->key[i] << ' ';
 			}
 		}
+	}
+}
+/*连接函数*/
+/*
+参数：
+	tree：要连接的树
+	k：连接中间插入的元素
+返回：
+	-1：代表最终结果存储在原来的树中
+	0：代表结果存储在原来的树中
+	+1：代表结果存储在参数传入的树中
+说明：
+	这个函数应该写成友元函数的，出于实验目的，先写了一个成员函数
+*/
+template<typename T>
+int Btree<T>::join(Btree tree , T k) {
+	if (root->h > tree.root->h) {
+		auto insertNode = findRightNode_h(root, tree.root->h + 1);
+		insertNode->key.insert(insertNode->key.end(), k);
+		insertNode->c.insert(insertNode->c.end(), tree.root);
+		++(insertNode->n);
+		return -1;
+	}
+	else if (root->h < tree.root->h) {
+		auto insertNode = findLeftNode_h(tree.root, root->h + 1);
+		insertNode->key.insert(insertNode->key.begin(), k);
+		insertNode->c.insert(insertNode->c.begin(), root);
+		++(insertNode->n);
+		return 1;
+	}
+	else {
+		auto lr = root;
+		auto rr = tree.root;
+		root = new Node;
+		root->key.push_back(k);
+		root->c.push_back(lr);
+		root->c.push_back(rr);
+		return 0;
+	}
+}
+
+/*找到树中最左边高度为h的结点*/
+/*
+参数：
+	root：目标树的根结点
+	h：目标高度
+返回：
+	高度为h的最左的结点
+说明：
+	Btree类的私有成员
+*/
+template<typename T>
+typename Btree<T>::Node* Btree<T>::findLeftNode_h(Node* root, int h) {
+	if (root->h == h) {
+		return root;
+	}
+	else {
+		if (root->c.front()->n == 2 * t - 1) {
+			splitChild(root, 0);
+		}
+		return findLeftNode_h(root->c.front(), h);
+	}
+}
+
+/*找到树中最右边高度为h的结点*/
+/*
+参数：
+	root：目标树的根结点
+	h：目标高度
+返回：
+	高度为h的最右的结点
+说明：
+	Btree类的私有成员
+*/
+template<typename T>
+typename Btree<T>::Node* Btree<T>::findRightNode_h(Node* root, int h) {
+	if (root->h == h) {
+		return root;
+	}
+	else {
+		if (root->c.back()->n == 2 * t - 1) {
+			splitChild(root, root->n);
+		}
+		return findRightNode_h(root->c.back(), h);
 	}
 }
 
@@ -446,6 +569,7 @@ void Btree<T>::splitChild(Node* x, int i) {
 	z->leaf = y->leaf;
 	z->n = t - 1;
 	z->key.resize(t - 1);
+	z->h = y->h;
 	for (int j = 0; j < t - 1; ++j) {
 		z->key[j] = (y->key[j + t]);
 	}
@@ -604,6 +728,3 @@ pair<typename Btree<T>::Node*, int> Btree<T>::succ(Node* x, T k) {
 		}
 	}
 }
-
-
-
