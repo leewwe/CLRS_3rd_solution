@@ -6,8 +6,8 @@ using std::vector;
 struct vebNode {
 	static const int NIL = -1;
 	int u;
-	vebNode* summary;
-	vector<vebNode*> cluster;
+	vebNode* summary;//摘要指针
+	vector<vebNode*> cluster;//簇指针数组
 	int min;
 	int max;
 
@@ -43,5 +43,7 @@ private:
 	vebNode* makeVEB(int k);
 private:
 	vebNode* root;
+	// 判断元素是否存在的辅助数组，缺点是会占用大量的内存空间，体现了空间换速度的思想
+	vector<bool> isExist;
 };
 

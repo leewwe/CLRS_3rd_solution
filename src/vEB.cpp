@@ -43,9 +43,10 @@ int maximum(vebNode* V) {
 参数：
 	u：全域大小
 */
-vEB::vEB(int u) {
+vEB::vEB(int u) : isExist(u, false) {
 	if (u < 0) {
 		u = 2;
+		isExist.resize(2, false);
 	}
 	int k = static_cast<int>(ceil(log2(u)));
 	root = makeVEB(k);
@@ -224,6 +225,10 @@ bool vEB::member(int x) {
 	私有实现函数
 */
 bool vEB::member(vebNode* V, int x) {
+	if (x > root->u || x < 0) {
+		return false;
+	}
+	// 不使用判定元素是否存在的数组isExist，时间复杂度O(lglgu)
 	if (x == V->min || x == V->max) {
 		return true;
 	}
@@ -233,6 +238,8 @@ bool vEB::member(vebNode* V, int x) {
 	else {
 		return member(V->cluster[V->high(x)], V->low(x));
 	}
+	// 使用判定元素是否存在的数组isExist，时间复杂度O(1)
+	//return isExist[x];
 }
 
 /*插入辅助函数*/
@@ -263,7 +270,19 @@ void vEB::insert(int x) {
 		cout << "the objected element is over universe!!" << endl;
 		return;
 	}
-	insert(root, x);
+	// 提前检查元素是否在vEB树中，避免插入已经在树中的元素，导致树结构被破坏
+	// 代价是O(lglgu)
+	//if (!member(root, x)) {
+	//	insert(root, x);
+	//}
+	// 这是另一种解决办法，再顶层维护一个记录元素是否存在的数组，用于常数时间检查元素是否存在
+	if (!isExist[x]) {
+		isExist[x] = true;
+		insert(root, x);
+	}
+	else {
+		cout << "the element " << x << " have been inserted in the vEB tree!!" << endl;
+	}
 }
 /*插入函数*/
 /*
@@ -312,7 +331,19 @@ void vEB::erase(int x) {
 		cout << "the objected element is over universe!!" << endl;
 		return;
 	}
-	erase(root, x);
+	// 提前检查元素是否在vEB树中，避免删除不在树中的元素，导致树结构被破坏
+	// 代价是O(lglgu)
+	//if (member(root, x)) {
+	//	erase(root, x);
+	//}
+	// 这是另一种解决办法，再顶层维护一个记录元素是否存在的数组，用于常数时间检查元素是否存在
+	if (isExist[x]) {
+		isExist[x] = false;
+		erase(root, x);
+	}
+	else {
+		cout << "the element " << x << " have been deleted from the vEB tree!!" << endl;
+	}
 }
 /*删除函数*/
 /*
@@ -336,6 +367,7 @@ void vEB::erase(vebNode* V, int x) {
 		else {
 			V->min = 0;
 		}
+		V->max = V->min;
 	}
 	else {
 		if (x == V->min) {
