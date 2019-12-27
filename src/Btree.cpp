@@ -1,4 +1,4 @@
-﻿#include "Btree.h"
+﻿#include "..\head\Btree.hh"
 
 /*友元函数版连接函数*/
 /*

@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include "vEB.h"
+#include "..\head\vEB.hh"
 #include <cmath>
 
 int vanEmdeBoas_main() {

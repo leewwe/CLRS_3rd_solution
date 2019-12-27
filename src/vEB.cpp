@@ -1,4 +1,4 @@
-#include "vEB.h"
+#include "..\head\vEB.hh"
 #include <cmath>
 #include <iostream>
 

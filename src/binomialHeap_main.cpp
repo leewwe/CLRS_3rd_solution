@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#include "binomialHeap.h"
+#include "..\head\binomialHeap.hh"
 
 int binomialHeap_main(int argc, char** argv) {
 

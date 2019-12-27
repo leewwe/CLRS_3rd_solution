@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <utility>
-#include "fibHeap.h"
+#include "..\head\fibHeap.hh"
 
 
 

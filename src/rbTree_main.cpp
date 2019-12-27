@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <vector>
-#include "RB_Tree.h"
+#include "..\head\RB_Tree.hh"
 #include "RB_Tree.cpp" // 为解决模板分离编译
 using namespace std;
 
