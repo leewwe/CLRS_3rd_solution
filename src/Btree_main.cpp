@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 // 类模板的蜜汁操作，如果要实现分离编译，需要包含.cpp文件
-#include "Btree.h"
+#include "..\head\Btree.hh"
 #include "Btree.cpp"
 
 using namespace std;
@@ -15,7 +16,7 @@ int btree_main() {
 		cv.push_back(buf);
 	}
 
-	Btree bt;
+	Btree<char> bt;
 	// 测试插入函数
 	for (auto c : cv) {
 		bt.insert(c);
@@ -42,7 +43,7 @@ int btree_main() {
 	}
 	//bt.print();
 	cout << endl;
-	Btree bt1;
+	Btree<char> bt1;
 	for (auto i = insertIndex + 1; i != cv.size(); ++i) {
 		bt1.insert(cv[i]);
 	}

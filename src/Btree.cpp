@@ -11,7 +11,7 @@
 说明：
 	使用前要保证确认满足t1.key < k < t2.key
 */
-template<typename T = char>
+template<typename T>
 Btree<T> join(Btree<T> t1, Btree<T> t2, T k) {
 	if (t1.root->h > t2.root->h) {
 		auto insertNode = t1.findRightNode_h(t1.root, t2.root->h + 1);

@@ -1,7 +1,7 @@
 ﻿// 练习题14.3.7，区间树判断是否有矩形重叠
 
 #include <iostream>  
-#include <algorithm>  
+#include <algorithm>
 using namespace std;  
 
 #define BLACK 0  
@@ -472,7 +472,7 @@ int main_rect()
         Sn[2*i+1] = Sort_Node(rect[i].x.high, i);  
     }  
     //按照x值排序  
-    sort(Sn, Sn + 2*N, cmp);  a
+    sort(Sn, Sn + 2*N, cmp);
     int ans = 0;  
     //依次处理排序结果  
     for(i = 0; i < 2 * N; i++)  

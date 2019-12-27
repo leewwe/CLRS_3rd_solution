@@ -6,7 +6,11 @@
 #include <iomanip>
 #include <fstream>
 #include <tuple>
-
+#include <map>
+#include <unordered_map>
+#include <queue>
+#include <memory>
+#include <set>
 
 // 部分c代码的头文件和警告去除
 #include <stdio.h>
@@ -676,6 +680,7 @@ void getPoints(vector<tuple<int, int, int>>& a, const string& fileName) {
 	a.push_back({ INT_MAX, INT_MAX, -1 });
 	fin.close();
 }
+
 /************************************************************************************************************************/
 /*练习题16.2-2 0-1背包*/
 /*
@@ -756,7 +761,7 @@ pair<int, vector<int>> DP_0_1_Knapsack_spaceOptimal_1(const vector<int>& val, co
 	W：背包最大承重
 */
 void printStealSeq(const vector<int>& weight, const vector<int>& b, const int& W) {
-	if (W < 0 || W > b.size() - 1 ||b[W] < 0) {
+	if (W < 0 || W > b.size() - 1 || b[W] < 0) {
 		return;
 	}
 	else {
@@ -822,6 +827,7 @@ map<double, double> minNumOfInterval(const vector<double>& points) {
 	ret.emplace(startBorder, sortedPoints[i - 1]);
 	return ret;
 }
+
 /************************************************************************************************************************/
 /*霍夫曼编码，贪心*/
 // 霍夫曼编码的二叉树节点结构
@@ -951,17 +957,20 @@ map<char, int> getChOcurrFreq(string fileName) {
 	map<char, int> chFreqMap;
 	char c = -1;
 	ifstream fin(fileName);
+	fin >> noskipws;
 	while (fin >> c) {
 		chFreqMap[c]++;
 	}
 
 	return chFreqMap;
 }
+
 /************************************************************************************************************************/
 /*拟阵求解任务调度问题*/
 /*求解单位时间任务调度问题的数据结构*/
 struct taskItem {
 	taskItem(int id, int d, int w) : ID(id), ddl(d), weight(w) {}
+	taskItem() : ID(-1), ddl(-1), weight(-1) {}
 	int ID;
 	int ddl;
 	int weight;
@@ -972,7 +981,12 @@ bool compareTaksWeight(const taskItem& a, const taskItem& b) {
 }
 /*按deadline排序的谓词*/
 bool compareTaskDDL(const taskItem& a, const taskItem& b) {
-	return a.ddl < b.ddl;
+	if (a.ddl != b.ddl) {
+		return a.ddl < b.ddl;
+	}
+	else {
+		return a.weight > b.weight;
+	}
 }
 /*判定是否满足拟阵条件（是否是独立的提前任务）的函数*/
 /*
@@ -987,6 +1001,7 @@ bool compareTaskDDL(const taskItem& a, const taskItem& b) {
 */
 bool isAddEarlyTask(vector<taskItem> earlyTaskTab, const taskItem& wait2InsertTask) {
 	earlyTaskTab.push_back(wait2InsertTask);
+	// 注意这里测试，需要测试所有的已经在提前任务集合中的元素
 	sort(earlyTaskTab.begin(), earlyTaskTab.end(), compareTaskDDL);
 	for (int i = 0; i < earlyTaskTab.size(); ++i) {
 		if (earlyTaskTab[i].ddl < i + 1) {
@@ -1043,6 +1058,7 @@ void getTaskTab(vector<taskItem>& taskTab, string fileName) {
 	}
 }
 
+
 /************************************************************************************************************************/
 /*思考题16-4中对于检查独立性的改进，原来每次需要O(n)，改进之后需要o(n)*/
 /*调度函数，优化独立想检查*/
@@ -1085,6 +1101,7 @@ pair<vector<taskItem>, int> matroid4UnitTaskSchedule_optimal(vector<taskItem>& t
 
 	return { taskSeq, lateStartPos };
 }
+
 
 /************************************************************************************************************************/
 /*思考题16-1贪心解法*/
@@ -1284,9 +1301,10 @@ void cacheManage(const vector<int>& R, int k) {
 	}
 }
 
-int main_greedyAlg(int argc, char** argv){
+
+int greeyAlg_main(int argc, char** argv){
 /*活动选择测试*/
-	vector<pair<int, int>> a_table;
+	//vector<pair<int, int>> a_table;
 	//DP写法测试
 	//getPoints(a_table, "activityTime.txt", 2);
 	//auto res = activitySelector_dp(a_table);
@@ -1348,33 +1366,46 @@ int main_greedyAlg(int argc, char** argv){
 	//printActivities(res.first, res.second, a, 0, a.size() - 1);
 
 /*练习题16.2-2测试*/
-	// vector<int> v{ 60,100,120 };
-	// vector<int> w{ 10,20,30 };
-	// DP_0_1_Knapsack(v, w, 50);
-	// auto res = DP_0_1_Knapsack_spaceOptimal_1(v, w, 50);
-	// printStealSeq(w, res.second, 50);
-	
+	//vector<int> v{ 60,100,120 };
+	//vector<int> w{ 10,20,30 };
+	//DP_0_1_Knapsack(v, w, 50);
+	//auto res = DP_0_1_Knapsack_spaceOptimal_1(v, w, 50);
+	//printStealSeq(w, res.second, 50);
+
 /*练习题16.2-4测试*/
-	// vector<double> dist{ 3, 4, 2, 8, 2, 7, 2, 8, 4, 9 };
-	// auto res = minNumOfRefill(dist, 10);
+	//vector<double> dist{ 3, 4, 2, 8, 2, 7, 2, 8, 4, 9 };
+	//auto res = minNumOfRefill(dist, 10);
 
 /*练习题16.2-5测试*/
-	// vector<double> points{ 1.9, 2.6, 3.4, 4.4, 8.3, 9.1, 1.4, 6.7, 9.4 };
-	// auto res = minNumOfInterval(points);
+	//vector<double> points{ 1.9, 2.6, 3.4, 4.4, 8.3, 9.1, 1.4, 6.7, 9.4 };
+	//auto res = minNumOfInterval(points);
+
 /*霍夫曼编码测试*/
-	// // 读取数据，并构造相应的字符频次表
-	// auto C = getChOcurrFreq("alpha.txt");
+	//// 读取数据，并构造相应的字符频次表
+	//auto C = getChOcurrFreq("alpha.txt");
+	//ifstream fin("huffman.txt");
+	//char c = -1;
+	//int freq = -1;
+	//C.clear();
+	//while (fin >> c >> freq) {
+	//	C[c] = freq;
+	//}
 
-	// // 编码，返回一棵树的根指针
-	// auto res = huffmanEncode(C);
-	
-	// // 编码表
-	// map<char, string>ret;
-	// outHuffmanEncode(res, ret);
+	//// 编码，返回一棵树的根指针
+	//auto res = huffmanEncode(C);
+	//
+	//// 编码表
+	//map<char, string>ret;
+	//outHuffmanEncode(res, ret);
 
-	// for (auto a : ret) {
-	// 	cout << a.first << "|" << a.second << endl;
-	// }
+	//for (auto a : ret) {
+	//	if (a.first == ' ') {
+	//		cout << "_" << '|' << a.second << endl;
+	//		continue;
+	//	}
+	//	cout << a.first << "|" << a.second << endl;
+	//}
+
 /*用拟阵求解任务调度问题*/	
 	//vector<taskItem> taskTab;
 	//// 读取任务表，代编号的
@@ -1388,21 +1419,20 @@ int main_greedyAlg(int argc, char** argv){
 
 	//// 思考题16-4，对于独立性检查的改进测试
 	//auto res = matroid4UnitTaskSchedule_optimal(taskTab);
-
 /*思考题16-1硬币找零测试*/
-	// vector<int> coins{ 1,25,10, 5 };
-	// // 贪心算法测试
-	// sort(coins.begin(), coins.end());
-	// auto res = coinsChange_greedy(coins, 30);
-	// print_greedy(res, coins);
-	// // DP算法测试
-	// auto res1 = coinsChange_DP(coins, 30);
-	// printChange_DP(30, res1, coins);
+	//vector<int> coins{ 1,25,10, 5 };
+	//// 贪心算法测试
+	//sort(coins.begin(), coins.end());
+	//auto res = coinsChange_greedy(coins, 30);
+	//print_greedy(res, coins);
+	//// DP算法测试
+	//auto res1 = coinsChange_DP(coins, 30);
+	//printChange_DP(30, res1, coins);
+
 /*思考题16-5离线缓存测试*/
 	//vector<int> R{ 4,2,4,2,4,1,3,4,2,1,3,2 };
 	//cacheManage(R, 3);
-// 
+
 	return 0;
 }
-
 

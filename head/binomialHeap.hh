@@ -16,7 +16,7 @@ void link(Node<T>* par, Node<T>* ch);
 template<typename T>
 void exchangeNode(Node<T>* l, Node<T>* r);
 // 模板结点定义
-template<typename T = char>
+template<typename T>
 struct Node {
 	T key;			// 关键字
 	Node* p;		// 父节点
@@ -28,7 +28,7 @@ struct Node {
 };
 
 // 二项堆类定义
-template<typename T = char>
+template<typename T>
 class binomialHeap {
 	template<typename T>
 	friend binomialHeap<T> unite(binomialHeap<T> H1, binomialHeap<T> H2);

@@ -5,7 +5,7 @@
 using namespace std;
 
 
-int main()
+int rbTree_main()
 {
 	RB_Tree<int> rbt;
 

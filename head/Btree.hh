@@ -5,7 +5,7 @@
 
 using namespace std;
 
-template<typename T = char> class Btree;
+template<typename T> class Btree;
 
 template<typename T = char>
 Btree<T> join(Btree<T> t1, Btree<T> t2, T k);

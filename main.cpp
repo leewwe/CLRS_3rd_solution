@@ -5,15 +5,7 @@ using namespace std;
 #include "head\insertSort.hh"
 #include "head\quickSort.hh"
 #include "head\kthQuantiles.hh"
-
-
 /*******************************************************************************************************************/
-
-
-
-/*******************************************************************************************************************/
-
-
 
 struct singleListNode {
     singleListNode(int k) : key(k), np(NULL)/* , prev(0), next(0) */{
