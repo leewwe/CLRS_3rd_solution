@@ -7,7 +7,7 @@ int partition(vector<int>& A, int p, int r) {
 	int i = p - 1;
 	int eqCnt = 0;
 	for (auto j = p; j < r; ++j) {
-		if (A[j] < x) {
+		if (A[j] <= x) {
 			exchange(A[++i], A[j]);
 		}
 		// 统计相等数目，当完全相等的时候返回范围的中点，而不是开头，
